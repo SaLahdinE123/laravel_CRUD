@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PostRequest;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Helper\productTrait ;
 
 class ProductsController extends Controller
 {
@@ -14,6 +14,7 @@ class ProductsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    use productTrait ;
     public function index()
     {
         $getLang = LaravelLocalization::getCurrentLocale() ;
@@ -38,22 +39,19 @@ class ProductsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(PostRequest $request)
     {
-//        get extension of the image
-        $file_extension = $request->product_image->getClientOriginalExtension();
-//        set image name using time
-        $file_name = time() . "." . $file_extension ;
+
         $path = "images/products_images" ;
-//       move file name to path(products_images) ;
-        $request->product_image->move($path , $file_name);
+        $product_image = $request->product_image ;
         $data = [
             'price'=>$request->price ,
             'product_description_en'=> $request->product_description_en ,
             'product_description_ar'=> $request->product_description_ar ,
             'product_name_en'=> $request->product_name_en ,
             'product_name_ar'=> $request->product_name_ar ,
-            'product_image'=>$file_name ,
+            'product_image'=>$this->saveImage($product_image , $path) ,
         ] ;
         Product::create($data) ;
         return redirect()->route('product.index')->with(['success' => 'added']);
@@ -93,10 +91,10 @@ class ProductsController extends Controller
     {
          $product  = Product::find($id);
          $product->productName = $request->productName ;
-        $product->price = $request->price;
-        $product->description = $request->description ;
-        $product->save();
-        return redirect()->route('product.index');
+         $product->price = $request->price;
+         $product->description = $request->description ;
+         $product->save();
+         return redirect()->route('product.index');
     }
 
     /**

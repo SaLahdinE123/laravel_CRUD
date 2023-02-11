@@ -13,5 +13,12 @@ return [
     'description_ar' => 'description in arabic' ,
     'description_en'=> 'description in english',
     'submit'=>'add' ,
-    'price'=> 'price'
+    'price'=> 'price' ,
+//    translate titles table
+    'product_name' =>  'name' ,
+    'product_image'=> 'image',
+    'product_description' => 'description' ,
+    'product_action' => 'action' ,
+    'product_update' => 'update' ,
+    'product_delete' => 'delete'
 ] ;
