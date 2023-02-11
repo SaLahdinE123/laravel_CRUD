@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PostRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 class ProductsController extends Controller
 {
@@ -15,7 +16,8 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
+        $getLang = LaravelLocalization::getCurrentLocale() ;
+        $products = Product::select('id'  ,  'product_name_'.$getLang.' as product_name' , 'product_description_'.$getLang.' as product_description' , 'price' , 'product_image')->get();
         return view('CRUD.home' , compact('products')) ;
     }
 
@@ -26,7 +28,8 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        return view('CRUD.create');
+        $lang =  LaravelLocalization::getCurrentLocale() ;
+        return view('CRUD.create' , compact('lang'));
     }
 
     /**
@@ -37,10 +40,20 @@ class ProductsController extends Controller
      */
     public function store(PostRequest $request)
     {
+//        get extension of the image
+        $file_extension = $request->product_image->getClientOriginalExtension();
+//        set image name using time
+        $file_name = time() . "." . $file_extension ;
+        $path = "images/products_images" ;
+//       move file name to path(products_images) ;
+        $request->product_image->move($path , $file_name);
         $data = [
-           'productName'=> $request->productName ,
-           'description'=> $request->description ,
             'price'=>$request->price ,
+            'product_description_en'=> $request->product_description_en ,
+            'product_description_ar'=> $request->product_description_ar ,
+            'product_name_en'=> $request->product_name_en ,
+            'product_name_ar'=> $request->product_name_ar ,
+            'product_image'=>$file_name ,
         ] ;
         Product::create($data) ;
         return redirect()->route('product.index')->with(['success' => 'added']);
@@ -97,5 +110,9 @@ class ProductsController extends Controller
         $products = Product::find($id) ;
         $products->delete();
         return redirect()->back()->with('success' , 'deleted');
+    }
+
+    protected function getLocation(){
+        return LaravelLocalization::getCurrentLocale();
     }
 }

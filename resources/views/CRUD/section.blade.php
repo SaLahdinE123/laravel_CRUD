@@ -15,24 +15,28 @@
                 {{Session::get('success')}}
         </div>
     @endif
+    <a class="btn btn-primary text-white mb-4"  href="{{url('product/create')}}">{{__('messages.add_product')}}</a>
     <table class="table">
         <thead>
         <tr class="bg-black text-white text-center">
             <th scope="col">id</th>
-            <th scope="col">product Name</th>
+            <th scope="col">Name</th>
             <th scope="col">price</th>
             <th scope="col">description</th>
+            <th scope="col">image</th>
+
             <th scope="col">action</th>
         </tr>
         </thead>
         <tbody>
         @foreach($products as $product)
-            <tr>
+            <tr class="align-middle">
                 <th scope="row">{{$product->id}}</th>
-                <td>{{$product->productName}}</td>
+                <td>{{$product->product_name}}</td>
                 <td>{{$product->price}}</td>
-                <td>{{$product->description}}</td>
-                <td style="display: flex ; gap: 10px">
+                <td>{{$product->product_description}}</td>
+                <td><img style="width: 50px ; height: 50px"  src="/images/products_images/{{$product->product_image}}" alt="" srcset=""></td>
+                <td style="display: flex ; gap: 10px ; margin-top:20px">
                     <a href="product\{{$product->id}}\edit" class="btn btn-primary">update</a>
                     <form action="{{url('product/'.$product->id)}}" method="post">
                         @csrf
